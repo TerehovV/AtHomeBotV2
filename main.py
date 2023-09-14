@@ -43,7 +43,7 @@ def change_cafe_to_vish(update: Update, context: CallbackContext):
     new_tuple = (existing_tuple[0], existing_tuple[1], 2)
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
-    update.callback_query.message.edit_text('Молодець', reply_markup=main_keyboard())
+    update.callback_query.message.edit_text('Меню Вишгородьска 45', reply_markup=main_keyboard())
     return sessions
 
 
@@ -53,7 +53,7 @@ def change_cafe_to_kras(update: Update, context: CallbackContext):
     new_tuple = (existing_tuple[0], existing_tuple[1], 1)
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
-    update.callback_query.message.edit_text('Молодець', reply_markup=main_keyboard())
+    update.callback_query.message.edit_text('Меню Червонопільска 2Г', reply_markup=main_keyboard())
     return sessions
 
 
@@ -82,7 +82,6 @@ dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREA
 # Run the bot until you press Ctrl-C or the process receives SIGINT,
 # SIGTERM or SIGABRT. This should be used most of the time, since
 # start_polling() is non-blocking and will stop the bot gracefully.
-updater.idle()
 
 
 if __name__ == '__main__':

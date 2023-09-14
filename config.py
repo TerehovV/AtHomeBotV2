@@ -26,3 +26,9 @@ url_leftovers = 'https://athome.joinposter.com/api/storage.getStorageLeftovers' 
 
 url_get_categories = 'https://athome.joinposter.com/api/menu.getCategories' \
                      '?token=856930:84743117e3fe60f857d5363bde5f750b'
+
+url_create_client = 'https://athome.joinposter.com/api/clients.createClient' \
+                     '?token=856930:84743117e3fe60f857d5363bde5f750b'
+
+url_get_clients = 'https://athome.joinposter.com/api/clients.getClients' \
+                     '?token=856930:84743117e3fe60f857d5363bde5f750b'

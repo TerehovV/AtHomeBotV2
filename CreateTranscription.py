@@ -4,8 +4,8 @@ from config import url_create_transaction, url_add_prod_in_transaction, url_get_
 
 
 class Transcription:
-    def create_t(self):
-        data = {'spot_id': '2',
+    def create_t(self, cafe_id):
+        data = {'spot_id': str(cafe_id),
                 'spot_tablet_id': '1',
                 'table_id': '1',
                 'user_id': '3',
@@ -14,8 +14,8 @@ class Transcription:
         tran_id = json.loads(requests.post(url_create_transaction, data).content)['response']['transaction_id']
         return tran_id
 
-    def add_product(self, transaction_id, product_id, modification):
-        data = {'spot_id': '2',
+    def add_product(self,cafe_id, transaction_id, product_id, modification):
+        data = {'spot_id': str(cafe_id),
                 'spot_tablet_id': '1',
                 'transaction_id': str(transaction_id),
                 'product_id': str(product_id),
@@ -24,8 +24,8 @@ class Transcription:
         transaction_product = json.loads(requests.post(url_add_prod_in_transaction, data).content)
         return transaction_product
 
-    def add_drink(self, transaction_id, product_id):
-        data = {'spot_id': '2',
+    def add_drink(self,cafe_id, transaction_id, product_id):
+        data = {'spot_id': str(cafe_id),
                 'spot_tablet_id': '1',
                 'transaction_id': str(transaction_id),
                 'product_id': str(product_id),
@@ -46,8 +46,8 @@ class Transcription:
 
         return response
 
-    def close_t(self, transaction_id, payed_card):
-        data = {'spot_id': '2',
+    def close_t(self, cafe_id, transaction_id, payed_card):
+        data = {'spot_id': str(cafe_id),
                 'spot_tablet_id': '1',
                 'transaction_id': str(transaction_id),
                 'payed_card': str(payed_card)

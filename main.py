@@ -1,4 +1,3 @@
-
 from telegram import LabeledPrice, ShippingOption, Update
 from telegram.ext import (
     Updater,
@@ -14,7 +13,6 @@ from TelegramKeyboard import cafe_choice_keyboard, main_keyboard
 from config import bot_key, provider_key
 from CreateClientCard import Client
 import logging
-
 
 logging.basicConfig(
     format='%(asctime)s-%(name)s-%(levelname)s-%(message)s', level=logging.INFO
@@ -85,4 +83,4 @@ dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREA
 
 
 if __name__ == '__main__':
-    updater.polling()
+    updater.start_polling()

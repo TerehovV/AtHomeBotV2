@@ -17,12 +17,12 @@ class Product:
                 drink_category[i['category_id']] = i['category_name']
         return drink_category
 
-    def get_drink_data(self, category_id):
+    def get_drink_data(self, category_name):
         f_list = json.loads(requests.get(url_batch).content)['response']
         drink_menu = {}
         for i in f_list:
-            if i['menu_category_id'] == str(category_id):
-                drink_menu[i['product_name']] = [i['category_name'], i['menu_category_id'], i['product_id']]
+            if i['category_name'] == str(category_name):
+                drink_menu[i['product_name']] = i['product_id']
         return drink_menu
 
     def get_products_data(self):
@@ -83,5 +83,5 @@ class Product:
             print(o)
 
 list_data = Product()
-print(list_data.get_drink_data(38))
+print(list_data.get_drink_data('Фільтрова кава'))
 

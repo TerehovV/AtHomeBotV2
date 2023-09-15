@@ -34,7 +34,7 @@ def hello(update: Update, context: CallbackContext):
     global sessions
     username = update.message.from_user.username
     client_id = user.create_client(username)
-    sessions[update.message.chat_id] = (username, client_id, transcription_id, shop_time, cafe_id)
+    sessions[update.message.chat_id] = (client_id, transcription_id, shop_time, cafe_id)
     print(sessions)
 
 

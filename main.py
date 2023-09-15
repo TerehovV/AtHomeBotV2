@@ -13,6 +13,7 @@ from TelegramKeyboard import cafe_choice_keyboard, main_keyboard, coffee_variabl
 from config import bot_key, provider_key
 from CreateClientCard import Client
 from GetPosterData import Product
+from CreateTranscription import Transcription
 import logging
 
 
@@ -39,8 +40,11 @@ def hello(update: Update, context: CallbackContext):
 
 def change_cafe_to_vish(update: Update, context: CallbackContext):
     global sessions
+    cafe_id = 2
+    trans = Transcription()
+    trans_id = trans.create_t(cafe_id)
     existing_tuple = sessions[update.callback_query.from_user.id]
-    new_tuple = (existing_tuple[0], existing_tuple[1], 2)
+    new_tuple = (existing_tuple[0], existing_tuple[1], cafe_id, trans_id)
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
     update.callback_query.message.edit_text('Меню Вишгородьска 45', reply_markup=main_keyboard())
@@ -49,8 +53,11 @@ def change_cafe_to_vish(update: Update, context: CallbackContext):
 
 def change_cafe_to_kras(update: Update, context: CallbackContext):
     global sessions
+    cafe_id = 1
+    trans = Transcription()
+    trans_id = trans.create_t(cafe_id)
     existing_tuple = sessions[update.callback_query.from_user.id]
-    new_tuple = (existing_tuple[0], existing_tuple[1], 1)
+    new_tuple = (existing_tuple[0], existing_tuple[1], cafe_id, trans_id)
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
     update.callback_query.message.edit_text('Меню Червонопільска 2Г', reply_markup=main_keyboard())
@@ -58,12 +65,17 @@ def change_cafe_to_kras(update: Update, context: CallbackContext):
 
 
 def back_to_main_menu(update: Update, context: CallbackContext):
+    global sessions
+    trans_id = sessions[update.callback_query.from_user.id][3]
+    del_tr = Transcription()
+    del_tr.remove_t(trans_id)
     if sessions[update.callback_query.from_user.id][2] == 1:
         change_cafe_to_kras(update, context)
     elif sessions[update.callback_query.from_user.id][2] == 2:
         change_cafe_to_vish(update, context)
     else:
         pass
+    return sessions
 
 
 def coffee_menu_choice(update: Update, context: CallbackContext):
@@ -86,11 +98,16 @@ def coffee_choice(update: Update, context: CallbackContext):
     d = dispatcher
     drink = Product()
     data = drink.get_drink_data(choice)
-    update.callback_query.message.edit_text(str(choice) + ':', reply_markup=coffee_choice_keyboard(data, d, create_transcription))
+    update.callback_query.message.edit_text(str(choice) + ':', reply_markup=coffee_choice_keyboard(data, d, add_drink_in_trans))
 
 
-def create_transcription(update: Update, context: CallbackContext):
-    print('create_transcription is running !')
+def add_drink_in_trans(update: Update, context: CallbackContext):
+    choice = update['callback_query']['data']
+    print('create_transcription is running ! data:', choice)
+
+
+
+
 
 
 ############################### Handlers #############################################

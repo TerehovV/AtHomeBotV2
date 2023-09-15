@@ -13,6 +13,8 @@ from TelegramKeyboard import cafe_choice_keyboard, main_keyboard
 from config import bot_key, provider_key
 from CreateClientCard import Client
 import logging
+import datetime
+import threading
 
 logging.basicConfig(
     format='%(asctime)s-%(name)s-%(levelname)s-%(message)s', level=logging.INFO
@@ -23,15 +25,16 @@ sessions = dict()
 
 def hello(update: Update, context: CallbackContext):
     user = Client()
+    transcription_id = 0
     cafe_id = 0
+    shop_time = datetime.datetime.now()
     update.message.reply_text("Привіт!")
     update.message.reply_text("Оберіть заклад для замовлення:",
                               reply_markup=cafe_choice_keyboard())
-
     global sessions
     username = update.message.from_user.username
     client_id = user.create_client(username)
-    sessions[update.message.chat_id] = (username, client_id, cafe_id)
+    sessions[update.message.chat_id] = (username, client_id, transcription_id, shop_time, cafe_id)
     print(sessions)
 
 

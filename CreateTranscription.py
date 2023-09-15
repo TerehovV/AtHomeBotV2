@@ -14,7 +14,7 @@ class Transcription:
         tran_id = json.loads(requests.post(url_create_transaction, data).content)['response']['transaction_id']
         return tran_id
 
-    def add_product(self,cafe_id, transaction_id, product_id, modification):
+    def add_product(self, cafe_id, transaction_id, product_id, modification):
         data = {'spot_id': str(cafe_id),
                 'spot_tablet_id': '1',
                 'transaction_id': str(transaction_id),

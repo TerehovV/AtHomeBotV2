@@ -9,7 +9,7 @@ from telegram.ext import (
     CallbackContext,
     CallbackQueryHandler
 )
-from TelegramKeyboard import cafe_choice_keyboard, main_keyboard, coffee_variable_keyboard
+from TelegramKeyboard import cafe_choice_keyboard, main_keyboard, coffee_variable_keyboard, coffee_choice_keyboard
 from config import bot_key, provider_key
 from CreateClientCard import Client
 from GetPosterData import Product
@@ -81,7 +81,17 @@ def breakfast_menu_choice(update: Update, context: CallbackContext):
 
 
 def coffee_choice(update: Update, context: CallbackContext):
-    print('coffee_choice is running !')
+    choice = update['callback_query']['data']
+    print('coffee_choice is running, data:', choice)
+    d = dispatcher
+    drink = Product()
+    data = drink.get_drink_data(choice)
+    update.callback_query.message.edit_text(str(choice) + ':', reply_markup=coffee_choice_keyboard(data, d, create_transcription))
+
+
+def create_transcription(update: Update, context: CallbackContext):
+    print('create_transcription is running !')
+
 
 ############################### Handlers #############################################
 
@@ -97,6 +107,7 @@ dispatcher.add_handler(CallbackQueryHandler(change_cafe_to_kras, pattern='KRAS')
 dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='COFFEE'))
 dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREAKFAST'))
 dispatcher.add_handler(CallbackQueryHandler(back_to_main_menu, pattern='back_to_main'))
+dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='back_to_coffe_variable'))
 # Run the bot until you press Ctrl-C or the process receives SIGINT,
 # SIGTERM or SIGABRT. This should be used most of the time, since
 # start_polling() is non-blocking and will stop the bot gracefully.

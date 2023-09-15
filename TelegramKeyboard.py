@@ -32,9 +32,19 @@ def coffee_variable_keyboard(data, d, coffee_choice):
     return InlineKeyboardMarkup(keyboard)
 
 
+def coffee_choice_keyboard(data, d, create_transcription):
+    print('coffee_choice_keyboard is running!')
+    inl = InlineKeyboardButton
+    keyboard = []
+    print(data)
+    for i in data:
+        x = [inl(text=str(i), callback_data=data[i])]
+        keyboard.append(x)
+        d.add_handler(CallbackQueryHandler(create_transcription, pattern=data[i]))
 
+    y = [inl(text='Назад ↩', callback_data='back_to_coffe_variable')]
+    keyboard.append(y)
 
-
-
+    return InlineKeyboardMarkup(keyboard)
 
 

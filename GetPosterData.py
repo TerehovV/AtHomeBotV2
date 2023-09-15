@@ -82,6 +82,5 @@ class Product:
             o = tuple(i.items())
             print(o)
 
-list_data = Product()
-print(list_data.get_drink_data('Фільтрова кава'))
+
 

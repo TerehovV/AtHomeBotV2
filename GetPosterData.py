@@ -1,6 +1,6 @@
 import requests
 import json
-from config import url_prod_kat, url_leftovers, url_get_categories
+from config import url_prod_kat, url_leftovers, url_get_categories, url_batch
 
 
 class Product:
@@ -16,6 +16,14 @@ class Product:
             else:
                 drink_category[i['category_id']] = i['category_name']
         return drink_category
+
+    def get_drink_data(self, category_id):
+        f_list = json.loads(requests.get(url_batch).content)['response']
+        drink_menu = {}
+        for i in f_list:
+            if i['menu_category_id'] == str(category_id):
+                drink_menu[i['product_name']] = [i['category_name'], i['menu_category_id'], i['product_id']]
+        return drink_menu
 
     def get_products_data(self):
         dict_products_data = {}
@@ -75,6 +83,5 @@ class Product:
             print(o)
 
 list_data = Product()
-print(list_data.get_drink_category())
-print(list_data.get_sweet_category())
-print(list_data.get_products_data())
+print(list_data.get_drink_data(38))
+

@@ -41,8 +41,10 @@ def hello(update: Update, context: CallbackContext):
 def change_cafe_to_vish(update: Update, context: CallbackContext):
     global sessions
     cafe_id = 2
+    client_id = sessions[update.callback_query.from_user.id][0]
     trans = Transcription()
     trans_id = trans.create_t(cafe_id)
+    trans.add_client(cafe_id, trans_id, client_id)
     existing_tuple = sessions[update.callback_query.from_user.id]
     new_tuple = (existing_tuple[0], existing_tuple[1], cafe_id, trans_id)
     sessions[update.callback_query.from_user.id] = new_tuple
@@ -54,8 +56,10 @@ def change_cafe_to_vish(update: Update, context: CallbackContext):
 def change_cafe_to_kras(update: Update, context: CallbackContext):
     global sessions
     cafe_id = 1
+    client_id = sessions[update.callback_query.from_user.id][0]
     trans = Transcription()
     trans_id = trans.create_t(cafe_id)
+    trans.add_client(cafe_id, trans_id, client_id)
     existing_tuple = sessions[update.callback_query.from_user.id]
     new_tuple = (existing_tuple[0], existing_tuple[1], cafe_id, trans_id)
     sessions[update.callback_query.from_user.id] = new_tuple

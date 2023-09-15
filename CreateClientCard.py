@@ -8,6 +8,7 @@ class Client:
     def create_client(self, username):
         client_id = None
         response = json.loads(requests.get(url_get_clients).content)['response']
+        print(response)
         print('Try to find client')
         for i in response:
             if username == i['lastname']:

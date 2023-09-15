@@ -1,6 +1,6 @@
 import requests
 import json
-from config import url_create_transaction, url_add_prod_in_transaction, url_get_transaction_product, url_remove_transaction, url_leftovers, url_close_transaction
+from config import url_create_transaction, url_add_prod_in_transaction, url_get_transaction_product, url_remove_transaction, url_leftovers, url_close_transaction, url_add_client_in_trans
 
 
 class Transcription:
@@ -13,6 +13,16 @@ class Transcription:
                 }
         tran_id = json.loads(requests.post(url_create_transaction, data).content)['response']['transaction_id']
         return tran_id
+
+    def add_client(self, cafe_id, trans_id, client_id ):
+        data = {'spot_id': str(cafe_id),
+                'spot_tablet_id': '1',
+                'transaction_id': str(trans_id),
+                'client_id': str(client_id)
+               }
+
+        err_code = json.loads(requests.post(url_add_client_in_trans, data).content)['response']['err_code']
+        return err_code
 
     def add_product(self, cafe_id, transaction_id, product_id, modification):
         data = {'spot_id': str(cafe_id),

@@ -107,7 +107,12 @@ def coffee_choice(update: Update, context: CallbackContext):
 
 def add_drink_in_trans(update: Update, context: CallbackContext):
     choice = update['callback_query']['data']
+    cafe_id = sessions[update.callback_query.from_user.id][2]
+    transcription_id = sessions[update.callback_query.from_user.id][3]
     print('create_transcription is running ! data:', choice)
+    user = Transcription()
+    user.add_drink(cafe_id, transcription_id, choice)
+
 
 
 

@@ -56,15 +56,7 @@ class Transcription:
         return response
 
 
-user = Transcription()
 
-tr_id = user.create_t()
-print(tr_id)
-user.add_product(tr_id, 745, 437)
-user.add_drink(tr_id, 11)
-order = user.get_t(tr_id)
-print(order)
-user.remove_t(tr_id)
 
 
 

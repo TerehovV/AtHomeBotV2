@@ -2,6 +2,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 from telegram.ext import CallbackQueryHandler
 from GetPosterData import Product
 
+
 def cafe_choice_keyboard():
     print('cafe_choice_keyboard is running !')
     keyboard = [[InlineKeyboardButton(text='Вишгородська 45 (Над Варусом)', callback_data='VISH')],
@@ -15,8 +16,24 @@ def main_keyboard():
                 [InlineKeyboardButton(text='Кухня (Сніданки)', callback_data='BREAKFAST')]]
     return InlineKeyboardMarkup(keyboard)
 
-def coffee_variable_keyboard():
-    print('coffee_variable_keyboard !')
+
+def coffee_variable_keyboard(data, d, coffee_choice):
+    print('coffee_variable_keyboard is running!')
+    inl = InlineKeyboardButton
+    keyboard = []
+    for i in data:
+        x = [inl(text=str(data[i]), callback_data=data[i])]
+        keyboard.append(x)
+        d.add_handler(CallbackQueryHandler(coffee_choice, pattern=data[i]))
+
+    y = [inl(text='Назад ↩', callback_data='back_to_main')]
+    keyboard.append(y)
+
+    return InlineKeyboardMarkup(keyboard)
+
+
+
+
 
 
 

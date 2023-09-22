@@ -26,7 +26,8 @@ def coffee_variable_keyboard(data, d, coffee_choice):
         keyboard.append(x)
         d.add_handler(CallbackQueryHandler(coffee_choice, pattern=data[i]))
 
-    y = [inl(text='Назад ↩', callback_data='back_to_main')]
+    y = [inl(text='Кошик 🛒', callback_data='basket'),
+         inl(text='Назад ↩', callback_data='back_to_main')]
     keyboard.append(y)
 
     return InlineKeyboardMarkup(keyboard)
@@ -42,7 +43,8 @@ def coffee_choice_keyboard(data, d, add_drink_in_trans):
         keyboard.append(x)
         d.add_handler(CallbackQueryHandler(add_drink_in_trans, pattern=data[i]))
 
-    y = [inl(text='Назад ↩', callback_data='back_to_coffe_variable')]
+    y = [inl(text='Кошик 🛒', callback_data='basket'),
+         inl(text='Назад ↩', callback_data='back_to_coffe_variable')]
     keyboard.append(y)
 
     return InlineKeyboardMarkup(keyboard)

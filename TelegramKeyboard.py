@@ -50,3 +50,12 @@ def coffee_choice_keyboard(data, d, add_drink_in_trans):
     return InlineKeyboardMarkup(keyboard)
 
 
+def show_basket_keyboard(data, d):
+    print('coffee_choice_keyboard is running!')
+    inl = InlineKeyboardButton
+    keyboard = []
+
+
+    print(data)
+
+

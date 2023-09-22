@@ -9,7 +9,14 @@ from telegram.ext import (
     CallbackContext,
     CallbackQueryHandler
 )
-from TelegramKeyboard import cafe_choice_keyboard, main_keyboard, coffee_variable_keyboard, coffee_choice_keyboard
+from TelegramKeyboard import (
+    cafe_choice_keyboard,
+    main_keyboard,
+    coffee_variable_keyboard,
+    coffee_choice_keyboard,
+    show_basket_keyboard
+                              )
+import threading
 from config import bot_key, provider_key
 from CreateClientCard import Client
 from GetPosterData import Product
@@ -89,7 +96,8 @@ def coffee_menu_choice(update: Update, context: CallbackContext):
     print(data)
     d = dispatcher
 
-    update.callback_query.message.edit_text('Кава та напої:', reply_markup=coffee_variable_keyboard(data, d, coffee_choice))
+    update.callback_query.message.edit_text('Кава та напої:',
+                                            reply_markup=coffee_variable_keyboard(data, d, coffee_choice))
 
 
 def breakfast_menu_choice(update: Update, context: CallbackContext):
@@ -102,16 +110,36 @@ def coffee_choice(update: Update, context: CallbackContext):
     d = dispatcher
     drink = Product()
     data = drink.get_drink_data(choice)
-    update.callback_query.message.edit_text(str(choice) + ':', reply_markup=coffee_choice_keyboard(data, d, add_drink_in_trans))
+    update.callback_query.message.edit_text(str(choice) + ':',
+                                            reply_markup=coffee_choice_keyboard(data, d, add_drink_in_trans))
 
 
 def add_drink_in_trans(update: Update, context: CallbackContext):
     choice = update['callback_query']['data']
     cafe_id = sessions[update.callback_query.from_user.id][2]
     transcription_id = sessions[update.callback_query.from_user.id][3]
-    print('create_transcription is running ! data:', choice)
+    print('add_drink_in_trans is running ! data:', choice)
     user = Transcription()
     user.add_drink(cafe_id, transcription_id, choice)
+    message = update.message.reply_text("Товар додано у кошик !")
+
+    def delete_message():
+        message.delete()
+
+    threading.Timer(3, delete_message).start()
+
+def show_basket(update: Update, context: CallbackContext):
+    print('show_basket is running!')
+    transaction_id = sessions[update.callback_query.from_user.id][3]
+    d = dispatcher
+    user = Transcription()
+    data = user.get_t(transaction_id)
+    message = 'Ваш кошик : \n\n'
+
+    for product, price in data.items():
+        message += f"{product}\t\t{price}грн\n"
+    update.callback_query.message.edit_text(message,
+                                            reply_markup=show_basket_keyboard(data, d))
 
 
 
@@ -121,7 +149,8 @@ def add_drink_in_trans(update: Update, context: CallbackContext):
 
 ############################### Handlers #############################################
 
-updater = Updater(bot_key)
+
+updater = Updater(bot_key, use_context=True)
 dispatcher = updater.dispatcher
 
 # Start the Bot
@@ -134,6 +163,7 @@ dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='COFFEE'
 dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREAKFAST'))
 dispatcher.add_handler(CallbackQueryHandler(back_to_main_menu, pattern='back_to_main'))
 dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='back_to_coffe_variable'))
+dispatcher.add_handler(CallbackQueryHandler(show_basket, pattern='basket'))
 # Run the bot until you press Ctrl-C or the process receives SIGINT,
 # SIGTERM or SIGABRT. This should be used most of the time, since
 # start_polling() is non-blocking and will stop the bot gracefully.

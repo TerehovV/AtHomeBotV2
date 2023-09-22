@@ -45,7 +45,10 @@ class Transcription:
 
     def get_t(self, transaction_id):
         transaction = json.loads(requests.get(url_get_transaction_product + f'&transaction_id={transaction_id}').content)['response']
-        return transaction
+        data = {}
+        for i in transaction:
+            data[i['product_name']] = str(int(int(i['product_sum'])/100))
+        return data
 
     def remove_t(self, transaction_id):
         data = {'spot_tablet_id': '1',

@@ -17,6 +17,8 @@ from TelegramKeyboard import (
     show_basket_keyboard
                               )
 import threading
+import datetime
+import time
 from config import bot_key, provider_key
 from CreateClientCard import Client
 from GetPosterData import Product
@@ -29,20 +31,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 sessions = dict()
+start_time = datetime.time(8, 0)
+end_time = datetime.time(20, 0)
 
 
 def hello(update: Update, context: CallbackContext):
-    user = Client()
-    transcription_id = 0
-    cafe_id = 0
-    update.message.reply_text("Привіт!")
-    update.message.reply_text("Оберіть заклад для замовлення:",
-                              reply_markup=cafe_choice_keyboard())
-    global sessions
-    username = update.message.from_user.username
-    client_id = user.create_client(username)
-    sessions[update.message.chat_id] = (client_id, transcription_id, cafe_id)
-    print(sessions)
+    current_time = datetime.datetime.now().time()
+    if start_time <= current_time <= end_time:
+        user = Client()
+        transcription_id = 0
+        cafe_id = 0
+        update.message.reply_text("Привіт!")
+        update.message.reply_text("Оберіть заклад для замовлення:",
+                                  reply_markup=cafe_choice_keyboard())
+        global sessions
+        username = update.message.from_user.username
+        client_id = user.create_client(username)
+        sessions[update.message.chat_id] = (client_id, transcription_id, cafe_id)
+        print(sessions)
+    else:
+        update.message.reply_text("Привіт ! Зараз не робочий час, бот працює з 8-20:00, чекаємо на вас пізніше 🤍")
+
 
 
 def change_cafe_to_vish(update: Update, context: CallbackContext):

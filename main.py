@@ -57,6 +57,16 @@ def change_cafe_to_vish(update: Update, context: CallbackContext):
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
     update.callback_query.message.edit_text('Меню Вишгородьска 45', reply_markup=main_keyboard())
+
+    def del_t_timer():
+        t_status = trans.get_t_status(trans_id)
+        if t_status == '1':
+            trans.remove_t(trans_id)
+            print("The check was automatically deleted, id: ", trans_id)
+        else:
+            pass
+
+    threading.Timer(1800, del_t_timer).start()
     return sessions
 
 
@@ -72,6 +82,16 @@ def change_cafe_to_kras(update: Update, context: CallbackContext):
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
     update.callback_query.message.edit_text('Меню Червонопільска 2Г', reply_markup=main_keyboard())
+
+    def del_t_timer():
+        t_status = trans.get_t_status(trans_id)
+        if t_status == '1':
+            trans.remove_t(trans_id)
+            print("The check was automatically deleted, id: ", trans_id)
+        else:
+            pass
+
+    threading.Timer(1800, del_t_timer).start()
     return sessions
 
 
@@ -121,11 +141,10 @@ def add_drink_in_trans(update: Update, context: CallbackContext):
     print('add_drink_in_trans is running ! data:', choice)
     user = Transcription()
     user.add_drink(cafe_id, transcription_id, choice)
-    message = update.callback_query.message.reply_text("Товар додано у кошик !")
+    message = update.callback_query.message.reply_text("Товар додано 👌")
 
     def delete_message():
         message.delete()
-
     threading.Timer(3, delete_message).start()
 
 

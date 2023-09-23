@@ -1,6 +1,6 @@
 import requests
 import json
-from config import url_create_transaction, url_add_prod_in_transaction, url_get_transaction_product, url_remove_transaction, url_leftovers, url_close_transaction, url_add_client_in_trans
+from config import url_create_transaction, url_add_prod_in_transaction, url_get_transaction_product, url_remove_transaction, url_leftovers, url_close_transaction, url_add_client_in_trans, url_get_transaction
 
 
 class Transcription:
@@ -34,7 +34,7 @@ class Transcription:
         transaction_product = json.loads(requests.post(url_add_prod_in_transaction, data).content)
         return transaction_product
 
-    def add_drink(self,cafe_id, transaction_id, product_id):
+    def add_drink(self, cafe_id, transaction_id, product_id):
         data = {'spot_id': str(cafe_id),
                 'spot_tablet_id': '1',
                 'transaction_id': str(transaction_id),
@@ -49,6 +49,13 @@ class Transcription:
         for i in transaction:
             data[i['product_name']] = str(int(int(i['product_sum'])/100))
         return data
+
+    def get_t_status(self, transaction_id):
+        data = json.loads(requests.get(url_get_transaction + f'&transaction_id={transaction_id}').content)['response'][0]['status']
+
+        return data
+
+
 
     def remove_t(self, transaction_id):
         data = {'spot_tablet_id': '1',

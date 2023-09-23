@@ -47,7 +47,7 @@ class Transcription:
         transaction = json.loads(requests.get(url_get_transaction_product + f'&transaction_id={transaction_id}').content)['response']
         data = {}
         for i in transaction:
-            data[i['product_name']] = str(int(int(i['product_sum'])/100))
+            data[i['product_name']] = (str(int(int(i['product_sum'])/100)), str(int(float(i['num']))))
         return data
 
     def get_t_status(self, transaction_id):

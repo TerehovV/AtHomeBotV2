@@ -163,10 +163,11 @@ def show_basket(update: Update, context: CallbackContext):
     d = dispatcher
     user = Transcription()
     data = user.get_t(transaction_id)
+    print(data)
     message = 'Ваш кошик : \n\n'
 
-    for product, price in data.items():
-        message += f"{product}\t\t{price}грн\n"
+    for product, (price, num) in data.items():
+        message += f"{product}\t{price}грн x {num}шт\n"
     update.callback_query.message.edit_text(message,
                                             reply_markup=show_basket_keyboard(data, d))
 

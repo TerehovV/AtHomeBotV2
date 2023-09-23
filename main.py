@@ -121,12 +121,13 @@ def add_drink_in_trans(update: Update, context: CallbackContext):
     print('add_drink_in_trans is running ! data:', choice)
     user = Transcription()
     user.add_drink(cafe_id, transcription_id, choice)
-    message = update.message.reply_text("Товар додано у кошик !")
+    message = update.callback_query.message.reply_text("Товар додано у кошик !")
 
     def delete_message():
         message.delete()
 
     threading.Timer(3, delete_message).start()
+
 
 def show_basket(update: Update, context: CallbackContext):
     print('show_basket is running!')

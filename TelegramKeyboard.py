@@ -4,11 +4,12 @@ from GetPosterData import Product
 
 
 def start_keyboard():
-    print('cafe_choice_keyboard is running !')
+    print('start_keyboard is running !')
     keyboard = [[InlineKeyboardButton(text='Розпочати роботу', callback_data='hello')],
                 [InlineKeyboardButton(text='Y', callback_data='hello')]]
 
     return InlineKeyboardMarkup(keyboard)
+
 
 def cafe_choice_keyboard(data, d, create_transcription):
     print('cafe_choice_keyboard is running !')
@@ -68,11 +69,12 @@ def coffee_choice_keyboard(data, d, add_drink_in_trans):
 
 
 def show_basket_keyboard(data, d):
-    print('coffee_choice_keyboard is running!')
-    inl = InlineKeyboardButton
-    keyboard = []
-
-
+    print('show_basket_keyboard is running!')
     print(data)
+    keyboard = [[InlineKeyboardButton(text='Сплатити', callback_data='pay')],
+                [InlineKeyboardButton(text='Очистити кошик', callback_data='clear_basket')]]
+
+    return InlineKeyboardMarkup(keyboard)
+
 
 

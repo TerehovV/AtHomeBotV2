@@ -17,6 +17,13 @@ from TelegramKeyboard import (
     show_basket_keyboard,
     start_keyboard
                               )
+
+from BotMessage import (
+    err_call_ship_msg,
+    err_send_ship_msg,
+    successful_pay_msg
+)
+
 import threading
 import datetime
 import time
@@ -33,11 +40,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 sessions = dict()
 start_time = datetime.time(8, 0)
-end_time = datetime.time(20, 0)
+end_time = datetime.time(21, 0)
 
 
 def start_message(update: Update, context: CallbackContext):
-    global sessions
     user = Client()
     transcription_id = 0
     cafe_id = 0
@@ -49,19 +55,18 @@ def start_message(update: Update, context: CallbackContext):
 
 
 def hello(update: Update, context: CallbackContext):
+    print('hello RUN')
     current_time = datetime.datetime.now().time()
     d = dispatcher
     spots = Product()
     data = spots.get_spots()
     if start_time <= current_time <= end_time:
         update.callback_query.message.edit_text("Оберіть заклад для замовлення:",
-                                                 reply_markup=cafe_choice_keyboard(data, d, create_transcription))
+                                                reply_markup=cafe_choice_keyboard(data, d, create_transcription))
 
     else:
         update.callback_query.message.reply_text("Привіт ! Зараз не робочий час, бот працює з 8-20:00,"
                                                  " чекаємо на вас пізніше 🤍")
-
-
 
 
 def create_transcription(update: Update, context: CallbackContext):
@@ -131,9 +136,9 @@ def coffee_choice(update: Update, context: CallbackContext):
 
 def add_drink_in_trans(update: Update, context: CallbackContext):
     choice = update['callback_query']['data']
+    print('add_drink_in_trans is running ! data:', choice)
     cafe_id = sessions[update.callback_query.from_user.id][2]
     transcription_id = sessions[update.callback_query.from_user.id][3]
-    print('add_drink_in_trans is running ! data:', choice)
     user = Transcription()
     user.add_drink(cafe_id, transcription_id, choice)
     message = update.callback_query.message.reply_text("Товар додано 👌")
@@ -158,13 +163,53 @@ def show_basket(update: Update, context: CallbackContext):
                                             reply_markup=show_basket_keyboard(data, d))
 
 
+def start_shipping_callback(update: Update, context: CallbackContext) -> None:
+
+    if update.callback_query.from_user.id not in sessions:
+        print('error: msg from unknown user!')
+        return
+    (_, _, suma) = sessions[update.callback_query.from_user.id]
+    if suma:
+        chat_id = update.callback_query.from_user.id
+        title = 'Оплата Замовлення "Заберу сам"'
+        description = final_check
+        payload = 'Custom-Payload'
+        provider_token = provider_key
+        currency = 'UAH'
+        price = suma
+        prices = [LabeledPrice('Test', price * 100)]
+        context.bot.send_invoice(
+            chat_id, title, description, payload, provider_token, currency, prices
+            )
+    else:
+        update.callback_query.message.reply_text(err_send_ship_msg())
+
+
+def shipping_callback(update: Update, context: CallbackContext):
+    query = update.shipping_query
+    if query.invoice_payload != 'Custom-Payload':
+        query.answer(ok=False, error_message=err_call_ship_msg())
+        return
+
+
+def precheckout_callback(update: Update, context: CallbackContext):
+    query = update.pre_checkout_query
+    if query.invoice_payload != 'Custom-Payload':
+        query.answer(ok=False, error_message=err_call_ship_msg())
+    else:
+        query.answer(ok=True)
+
+
+def successful_payment_callback(update: Update, context: CallbackContext):
+    update.message.reply_text(successful_pay_msg())
+
+
 
 
 
 
 
 ############################### Handlers #############################################
-
 
 updater = Updater(bot_key, use_context=True)
 dispatcher = updater.dispatcher
@@ -177,8 +222,10 @@ dispatcher.add_handler(CallbackQueryHandler(hello, pattern='hello'))
 dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='COFFEE'))
 #dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREAKFAST'))
 dispatcher.add_handler(CallbackQueryHandler(back_to_main_menu, pattern='back_to_main'))
+dispatcher.add_handler(CallbackQueryHandler(back_to_main_menu, pattern='clear_basket'))
 dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='back_to_coffe_variable'))
 dispatcher.add_handler(CallbackQueryHandler(show_basket, pattern='basket'))
+dispatcher.add_handler(CallbackQueryHandler(start_shipping_callback, pattern='pay'))
 # Run the bot until you press Ctrl-C or the process receives SIGINT,
 # SIGTERM or SIGABRT. This should be used most of the time, since
 # start_polling() is non-blocking and will stop the bot gracefully.

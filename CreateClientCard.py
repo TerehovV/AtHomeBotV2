@@ -1,4 +1,4 @@
-iimport requests
+import requests
 import json
 
 from config import url_create_client, url_get_clients

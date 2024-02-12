@@ -1,6 +1,9 @@
 import requests
 import json
-from config import url_create_transaction, url_add_prod_in_transaction, url_get_transaction_product, url_remove_transaction, url_leftovers, url_close_transaction, url_add_client_in_trans, url_get_transaction
+from config import (url_create_transaction, url_add_prod_in_transaction,
+                    url_get_transaction_product, url_remove_transaction,
+                    url_leftovers, url_close_transaction, url_add_client_in_trans,
+                    url_get_transaction)
 
 
 class Transcription:
@@ -23,6 +26,9 @@ class Transcription:
 
         err_code = json.loads(requests.post(url_add_client_in_trans, data).content)['response']['err_code']
         return err_code
+
+    def change_cafe_to_nova(self, sessions, update, cafe_id, trans_id, context):
+        pass
 
     def add_product(self, cafe_id, transaction_id, product_id, modification):
         data = {'spot_id': str(cafe_id),
@@ -55,8 +61,6 @@ class Transcription:
 
         return data
 
-
-
     def remove_t(self, transaction_id):
         data = {'spot_tablet_id': '1',
                 'transaction_id': str(transaction_id),
@@ -74,8 +78,6 @@ class Transcription:
                 }
         response = json.loads(requests.post(url_close_transaction, data).content)['response']['err_code']
         return response
-
-
 
 
 

@@ -1,9 +1,16 @@
 import requests
 import json
-from config import url_prod_kat, url_leftovers, url_get_categories, url_batch
+from config import url_prod_kat, url_leftovers, url_get_categories, url_batch, url_get_spots
 
 
 class Product:
+    def get_spots(self):
+        list_spots = json.loads(requests.get(url_get_spots).content)['response']
+        spots_data = {}
+        for i in list_spots:
+            spots_data[i['spot_id']] = i['name']
+
+        return spots_data
 
     def get_drink_category(self):
         t_list = json.loads(requests.get(url_get_categories).content)['response']
@@ -83,4 +90,8 @@ class Product:
             print(o)
 
 
+test = Product()
 
+print(test.get_spots())
+
+#{'response': [{'spot_id': 1, 'name': 'Перемишльска', 'address': 'вулиця Перемишльська, 2Г, Київ, 02000', 'lat': '50.5104714000', 'lng': '30.4440924000', 'spot_delete': 0}

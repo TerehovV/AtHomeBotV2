@@ -3,17 +3,34 @@ from telegram.ext import CallbackQueryHandler
 from GetPosterData import Product
 
 
-def cafe_choice_keyboard():
+def start_keyboard():
     print('cafe_choice_keyboard is running !')
-    keyboard = [[InlineKeyboardButton(text='Вишгородська 45 (Над Варусом)', callback_data='VISH')],
-                [InlineKeyboardButton(text='Червонопільска 2Г ("Паркова Вежа") ', callback_data='KRAS')]]
+    keyboard = [[InlineKeyboardButton(text='Розпочати роботу', callback_data='hello')],
+                [InlineKeyboardButton(text='Y', callback_data='hello')]]
+
+    return InlineKeyboardMarkup(keyboard)
+
+def cafe_choice_keyboard(data, d, create_transcription):
+    print('cafe_choice_keyboard is running !')
+    inl = InlineKeyboardButton
+    keyboard = []
+    for i in data:
+        print(i)
+        print(data[i])
+        x = [inl(text=str(data[i]), callback_data=str(i))]
+        keyboard.append(x)
+        d.add_handler(CallbackQueryHandler(create_transcription, pattern=str(i)))
+
     return InlineKeyboardMarkup(keyboard)
 
 
 def main_keyboard():
     print('main_keyboard is running !')
+
     keyboard = [[InlineKeyboardButton(text='Кава та напої', callback_data='COFFEE')],
-                [InlineKeyboardButton(text='Кухня (Сніданки)', callback_data='BREAKFAST')]]
+                [InlineKeyboardButton(text='Кухня (Сніданки) BETA !!!', callback_data='BREAKFAST')],
+                [InlineKeyboardButton(text='Назад ↩', callback_data='back_to_main')]]
+
     return InlineKeyboardMarkup(keyboard)
 
 

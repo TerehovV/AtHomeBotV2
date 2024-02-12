@@ -14,7 +14,8 @@ from TelegramKeyboard import (
     main_keyboard,
     coffee_variable_keyboard,
     coffee_choice_keyboard,
-    show_basket_keyboard
+    show_basket_keyboard,
+    start_keyboard
                               )
 import threading
 import datetime
@@ -35,74 +36,57 @@ start_time = datetime.time(8, 0)
 end_time = datetime.time(20, 0)
 
 
+def start_message(update: Update, context: CallbackContext):
+    global sessions
+    user = Client()
+    transcription_id = 0
+    cafe_id = 0
+    username = update.message.from_user.username
+    client_id = user.create_client(username)
+    sessions[update.message.chat_id] = (client_id, transcription_id, cafe_id)
+    print(sessions)
+    update.message.reply_text("Привіт!", reply_markup=start_keyboard())
+
+
 def hello(update: Update, context: CallbackContext):
     current_time = datetime.datetime.now().time()
+    d = dispatcher
+    spots = Product()
+    data = spots.get_spots()
     if start_time <= current_time <= end_time:
-        user = Client()
-        transcription_id = 0
-        cafe_id = 0
-        update.message.reply_text("Привіт!")
-        update.message.reply_text("Оберіть заклад для замовлення:",
-                                  reply_markup=cafe_choice_keyboard())
-        global sessions
-        username = update.message.from_user.username
-        client_id = user.create_client(username)
-        sessions[update.message.chat_id] = (client_id, transcription_id, cafe_id)
-        print(sessions)
+        update.callback_query.message.edit_text("Оберіть заклад для замовлення:",
+                                                 reply_markup=cafe_choice_keyboard(data, d, create_transcription))
+
     else:
-        update.message.reply_text("Привіт ! Зараз не робочий час, бот працює з 8-20:00, чекаємо на вас пізніше 🤍")
+        update.callback_query.message.reply_text("Привіт ! Зараз не робочий час, бот працює з 8-20:00,"
+                                                 " чекаємо на вас пізніше 🤍")
 
 
 
-def change_cafe_to_vish(update: Update, context: CallbackContext):
+
+def create_transcription(update: Update, context: CallbackContext):
     global sessions
-    cafe_id = 2
+    print("create_transcription ------> run !")
+    cafe_id = update['callback_query']['data']
     client_id = sessions[update.callback_query.from_user.id][0]
     trans = Transcription()
     trans_id = trans.create_t(cafe_id)
     trans.add_client(cafe_id, trans_id, client_id)
+
     existing_tuple = sessions[update.callback_query.from_user.id]
     new_tuple = (existing_tuple[0], existing_tuple[1], cafe_id, trans_id)
     sessions[update.callback_query.from_user.id] = new_tuple
     print(sessions)
-    update.callback_query.message.edit_text('Меню Вишгородьска 45', reply_markup=main_keyboard())
+    update.callback_query.message.edit_text('MENU', reply_markup=main_keyboard())
 
     def del_t_timer():
+        global sessions
         t_status = trans.get_t_status(trans_id)
         if t_status == '1':
             trans.remove_t(trans_id)
             print("The check was automatically deleted, id: ", trans_id)
             update.callback_query.message.reply_text("Час очікування вийшов. Ваш чек видалено !")
-            update.callback_query.message.edit_text("Оберіть заклад для замовлення:",
-                                                    reply_markup=cafe_choice_keyboard())
-        else:
-            pass
-
-    threading.Timer(1800, del_t_timer).start()
-    return sessions
-
-
-def change_cafe_to_kras(update: Update, context: CallbackContext):
-    global sessions
-    cafe_id = 1
-    client_id = sessions[update.callback_query.from_user.id][0]
-    trans = Transcription()
-    trans_id = trans.create_t(cafe_id)
-    trans.add_client(cafe_id, trans_id, client_id)
-    existing_tuple = sessions[update.callback_query.from_user.id]
-    new_tuple = (existing_tuple[0], existing_tuple[1], cafe_id, trans_id)
-    sessions[update.callback_query.from_user.id] = new_tuple
-    print(sessions)
-    update.callback_query.message.edit_text('Меню Червонопільска 2Г', reply_markup=main_keyboard())
-
-    def del_t_timer():
-        t_status = trans.get_t_status(trans_id)
-        if t_status == '1':
-            trans.remove_t(trans_id)
-            print("The check was automatically deleted, id: ", trans_id)
-            update.callback_query.message.reply_text("Час очікування вийшов. Ваш чек видалено !")
-            update.callback_query.message.edit_text("Оберіть заклад для замовлення:",
-                                                    reply_markup=cafe_choice_keyboard())
+            sessions = dict()
         else:
             pass
 
@@ -115,12 +99,8 @@ def back_to_main_menu(update: Update, context: CallbackContext):
     trans_id = sessions[update.callback_query.from_user.id][3]
     del_tr = Transcription()
     del_tr.remove_t(trans_id)
-    if sessions[update.callback_query.from_user.id][2] == 1:
-        change_cafe_to_kras(update, context)
-    elif sessions[update.callback_query.from_user.id][2] == 2:
-        change_cafe_to_vish(update, context)
-    else:
-        pass
+    hello(update, context)
+
     return sessions
 
 
@@ -192,11 +172,10 @@ dispatcher = updater.dispatcher
 # Start the Bot
 updater.start_polling()
 
-dispatcher.add_handler(CommandHandler("start", hello))
-dispatcher.add_handler(CallbackQueryHandler(change_cafe_to_vish, pattern='VISH'))
-dispatcher.add_handler(CallbackQueryHandler(change_cafe_to_kras, pattern='KRAS'))
+dispatcher.add_handler(CommandHandler("start", start_message))
+dispatcher.add_handler(CallbackQueryHandler(hello, pattern='hello'))
 dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='COFFEE'))
-dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREAKFAST'))
+#dispatcher.add_handler(CallbackQueryHandler(breakfast_menu_choice, pattern='BREAKFAST'))
 dispatcher.add_handler(CallbackQueryHandler(back_to_main_menu, pattern='back_to_main'))
 dispatcher.add_handler(CallbackQueryHandler(coffee_menu_choice, pattern='back_to_coffe_variable'))
 dispatcher.add_handler(CallbackQueryHandler(show_basket, pattern='basket'))

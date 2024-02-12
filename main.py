@@ -72,6 +72,9 @@ def change_cafe_to_vish(update: Update, context: CallbackContext):
         if t_status == '1':
             trans.remove_t(trans_id)
             print("The check was automatically deleted, id: ", trans_id)
+            update.callback_query.message.reply_text("Час очікування вийшов. Ваш чек видалено !")
+            update.callback_query.message.edit_text("Оберіть заклад для замовлення:",
+                                                    reply_markup=cafe_choice_keyboard())
         else:
             pass
 
@@ -97,6 +100,9 @@ def change_cafe_to_kras(update: Update, context: CallbackContext):
         if t_status == '1':
             trans.remove_t(trans_id)
             print("The check was automatically deleted, id: ", trans_id)
+            update.callback_query.message.reply_text("Час очікування вийшов. Ваш чек видалено !")
+            update.callback_query.message.edit_text("Оберіть заклад для замовлення:",
+                                                    reply_markup=cafe_choice_keyboard())
         else:
             pass
 

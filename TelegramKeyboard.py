@@ -68,9 +68,8 @@ def coffee_choice_keyboard(data, d, add_drink_in_trans):
     return InlineKeyboardMarkup(keyboard)
 
 
-def show_basket_keyboard(data, d):
+def show_basket_keyboard():
     print('show_basket_keyboard is running!')
-    print(data)
     keyboard = [[InlineKeyboardButton(text='Сплатити', callback_data='pay')],
                 [InlineKeyboardButton(text='Очистити кошик', callback_data='clear_basket')]]
 

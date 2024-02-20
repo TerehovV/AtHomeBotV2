@@ -109,15 +109,18 @@ def back_to_main_menu(update: Update, context: CallbackContext):
     return sessions
 
 
+COFFEE_AND_DRINK_STR = 'Кава та напої:'
+
+
 def coffee_menu_choice(update: Update, context: CallbackContext):
+    """ Edit text of main keyboard, and run coffee variable button"""
     print('coffee_menu_choice is running !')
     coffee_category = Product()
-    data = coffee_category.get_drink_category()
-    print(data)
-    d = dispatcher
-
-    update.callback_query.message.edit_text('Кава та напої:',
-                                            reply_markup=coffee_variable_keyboard(data, d, coffee_choice))
+    update.callback_query.message.edit_text(COFFEE_AND_DRINK_STR,
+                                            reply_markup=coffee_variable_keyboard(
+                                                data=coffee_category.get_drink_category(),
+                                                d=dispatcher,
+                                                coffee_choice=coffee_choice))
 
 
 def breakfast_menu_choice(update: Update, context: CallbackContext):
@@ -151,7 +154,6 @@ def add_drink_in_trans(update: Update, context: CallbackContext):
 def show_basket(update: Update, context: CallbackContext):
     print('show_basket is running!')
     transaction_id = sessions[update.callback_query.from_user.id][3]
-    d = dispatcher
     user = Transcription()
     data = user.get_t(transaction_id)
     print(data)
@@ -160,32 +162,35 @@ def show_basket(update: Update, context: CallbackContext):
     for product, (price, num) in data.items():
         message += f"{product}\t{price}грн x {num}шт\n"
     update.callback_query.message.edit_text(message,
-                                            reply_markup=show_basket_keyboard(data, d))
+                                            reply_markup=show_basket_keyboard())
 
 
-def start_shipping_callback(update: Update, context: CallbackContext) -> None:
+def start_shipping_callback(update: Update, context: CallbackContext):
 
     if update.callback_query.from_user.id not in sessions:
         print('error: msg from unknown user!')
         return
-    (_, _, suma) = sessions[update.callback_query.from_user.id]
-    if suma:
+
+    elif update.callback_query.from_user.id in sessions:
+        get_suma = Transcription()
         chat_id = update.callback_query.from_user.id
         title = 'Оплата Замовлення "Заберу сам"'
-        description = final_check
+        description = "TEST"
         payload = 'Custom-Payload'
         provider_token = provider_key
         currency = 'UAH'
-        price = suma
-        prices = [LabeledPrice('Test', price * 100)]
+        price = int(get_suma.get_t_sum(transaction_id=sessions[update.callback_query.from_user.id][3]))
+        prices = [LabeledPrice('Test', price)]
         context.bot.send_invoice(
             chat_id, title, description, payload, provider_token, currency, prices
             )
+        print('start ship successful')
     else:
         update.callback_query.message.reply_text(err_send_ship_msg())
 
 
 def shipping_callback(update: Update, context: CallbackContext):
+    print('start shipping_callback')
     query = update.shipping_query
     if query.invoice_payload != 'Custom-Payload':
         query.answer(ok=False, error_message=err_call_ship_msg())
@@ -193,6 +198,7 @@ def shipping_callback(update: Update, context: CallbackContext):
 
 
 def precheckout_callback(update: Update, context: CallbackContext):
+    print('start precheckout_callback')
     query = update.pre_checkout_query
     if query.invoice_payload != 'Custom-Payload':
         query.answer(ok=False, error_message=err_call_ship_msg())
@@ -201,6 +207,7 @@ def precheckout_callback(update: Update, context: CallbackContext):
 
 
 def successful_payment_callback(update: Update, context: CallbackContext):
+    print('start successful_payment_callback')
     update.message.reply_text(successful_pay_msg())
 
 
@@ -214,8 +221,8 @@ def successful_payment_callback(update: Update, context: CallbackContext):
 updater = Updater(bot_key, use_context=True)
 dispatcher = updater.dispatcher
 
-# Start the Bot
-updater.start_polling()
+
+
 
 dispatcher.add_handler(CommandHandler("start", start_message))
 dispatcher.add_handler(CallbackQueryHandler(hello, pattern='hello'))
@@ -230,6 +237,6 @@ dispatcher.add_handler(CallbackQueryHandler(start_shipping_callback, pattern='pa
 # SIGTERM or SIGABRT. This should be used most of the time, since
 # start_polling() is non-blocking and will stop the bot gracefully.
 
-
+# Start the Bot
 if __name__ == '__main__':
     updater.start_polling()

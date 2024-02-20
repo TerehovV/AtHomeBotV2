@@ -56,6 +56,11 @@ class Transcription:
             data[i['product_name']] = (str(int(int(i['product_sum'])/100)), str(int(float(i['num']))))
         return data
 
+    def get_t_sum(self, transaction_id):
+        data = json.loads(requests.get(url_get_transaction + f'&transaction_id={transaction_id}').content)['response'][0]['sum']
+
+        return data
+
     def get_t_status(self, transaction_id):
         data = json.loads(requests.get(url_get_transaction + f'&transaction_id={transaction_id}').content)['response'][0]['status']
 
